@@ -1,0 +1,31 @@
+thead  {
+    background-color: rgb(103, 248, 248);
+}
+table {
+    border: 1px solid gray;
+}
+
+td {
+    border: 1px solid gray;
+}
+
+.quantity-subtotal {
+    background-color: rgb(150, 182, 150);
+}
+
+.yellow {
+    background-color: rgb(255, 204, 62);
+}
+
+.quantity {
+    color: blue
+}
+
+.purple {
+    background-color: rgb(146, 142, 239);
+}
+
+.red {
+
+    background-color: plum;
+}

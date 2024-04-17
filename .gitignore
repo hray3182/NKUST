@@ -1,0 +1,5 @@
+.venv
+CNNMnist.keras
+mnist.keras
+__pycache__
+.vscode

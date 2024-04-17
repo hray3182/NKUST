@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飲料訂購單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex text-white bg-gradient-to-r from-pink-700 to-purple-800 text-lg h-screen">
+    <div class="m-auto my-20 w-1/2 rounded-lg p-5 shadow-lg bg-gradient-to-tl from-pink-400 to-purple-500">
+        <form>
+            <table class="table-fixed w-full text-center">
+                <thead>
+                    <tr>
+                        <td>品項</td>
+                        <td>價格</td>
+                        <td>數量</td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tr>
+                    <td>
+                        <button id="add-new-item" class="bg-gradient-to-r from-fuchsia-500 to-rose-700  text-white px-4 py-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                                class="w-6 h-6 inline-block" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                    d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>
+                                新增品項
+                            </span>
+                        </button>
+                    </td>
+                    <td>
+                        <input id="new-item" type="text" placeholder="輸入品項名"
+                            class="text-center outline-none bg-transparent border-2 rounded-lg placeholder:text-white">
+
+                    </td>
+                </tr>
+            </table>
+            <div class="w-full flex-wrap mt-5 space-y-5 justify-items-center">
+                <div class="flex mx-auto align-middle space-x-2 justify-center items-center">
+
+                </div>
+                <div class="flex mx-auto align-middle space-x-2 justify-center items-center">
+                    <button id="checkout" class="bg-gradient-to-r from-sky-500 to-sky-700  text-white px-4 py-2 rounded-lg items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6 inline-block ">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        <span>結帳</span>
+                    </button>
+                    <span>會員</span>
+                    <input type="radio" name="member" id="member" checked>
+                    <span>非會員</span>
+                    <input type="radio" name="member" id="non-member">
+                </div>
+            </div>
+            <div id="order-detial" class="mt-5 p-5 border-double border-4 rounded-lg border-purple-900 hidden">
+                <p>親愛的顧客，您點的是：</p>
+            </div>
+        </form>
+    </div>
+    <div>
+
+    </div>
+</body>
+<style>
+    input[type="radio"] {
+        width: 20px;
+        height: 20px;
+    }
+
+</style>
+<script src="./main.js"></script>
+
+</html>
