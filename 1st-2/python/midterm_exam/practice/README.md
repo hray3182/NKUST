@@ -1,0 +1,1 @@
+練習 OOP 的代碼，[題目](https://github.com/hray3182/OOP_Practice)
