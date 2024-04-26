@@ -1,7 +1,8 @@
 class Book:
-    def __init__(self, name, author) -> None:
+    def __init__(self, name, author, isbn) -> None:
         self.name = name
         self.author = author
+        self.isbn = isbn
         self.is_borrowed = False
 
 class User:
@@ -44,9 +45,9 @@ class Staff(User):
 
 
 if __name__ == "__main__":
-    book1 = Book("Book1", "Author1")
-    book2 = Book("Book2", "Author2")
-    book3 = Book("Book3", "Author3")
+    book1 = Book("Book1", "Author1", 123)
+    book2 = Book("Book2", "Author2", 456)
+    book3 = Book("Book3", "Author3", 789)
     book_list = [book1, book2, book3]
 
     user = User("User", 1)
