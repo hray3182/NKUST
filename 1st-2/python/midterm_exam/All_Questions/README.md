@@ -93,11 +93,33 @@ Animal_A類別包含
 
 請用物件導向思維完成以下銀行帳戶管理系統
 
-• 類別設計 (20%)：建立Account_A類別，具有屬性(1)帳戶號碼、(2)持有人姓名和(3)餘額。
+## 類別設計 (20%)
 
-• 函式規劃 (20%)：Account_A類別具有(1)存款、(2)提款和(3)查詢餘額的方法。
+建立Account_A類別，具有屬性
 
-• 繼承 (30%)：繼承Account_A類別創建CheckingAccount和SavingsAccount類別。CheckingAccount額外的方法有(1)每月交易限制，SavingsAccount額外的方法有(1)儲存每月交易。
+1. 帳戶號碼
+2. 持有人姓名和
+3. 餘額
+
+## 函式規劃 (20%)
+
+Account_A類別具有
+
+1. 存款
+2. 提款和
+3. 查詢餘額的方法
+
+## 繼承 (30%)
+
+繼承Account_A類別創建CheckingAccount和SavingsAccount類別。
+
+CheckingAccount額外的方法有
+
+1. 每月交易限制
+
+SavingsAccount額外的方法有
+
+1. 儲存每月交易
  
 # Q5
 
