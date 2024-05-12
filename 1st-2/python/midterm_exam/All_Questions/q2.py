@@ -53,7 +53,7 @@ class Bird(Animal):
         self.span = span
 
     def move(self, x, y):
-        print(f"{self.species} flies to ({x}, {y})")
+        print(f"{self.species} flies to x: {x} y: {y}")
         self.position_x = x
         self.position_y = y
     
