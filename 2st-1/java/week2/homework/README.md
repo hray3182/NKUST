@@ -9,6 +9,6 @@
 
 程式的輸出結果如下：
 
-![1-2](./assets/homework_1-2.png)
+![1-2](../assets/homework_1-2.png)
 
 > 請注意姓名與同學間有一個空格。

@@ -1,4 +1,4 @@
-package week2;
+package week2.homework;
 public class homework_1_1 {
     public static void main(String[] args) {
         System.out.println("蘇泓叡");
