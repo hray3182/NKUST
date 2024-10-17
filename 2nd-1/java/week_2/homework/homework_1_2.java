@@ -1,4 +1,3 @@
-package week2.homework;
 public class homework_1_2 {
     public static void main(String[] args) {
         String id = "C112156233";
