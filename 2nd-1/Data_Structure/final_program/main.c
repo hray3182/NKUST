@@ -143,8 +143,8 @@ int main()
     // 測試搜索功能
     printf("Search for 'is': %s\n", search(root, "is")? "Found" : "Not Found");
     printf("Search for 'final': %s\n", search(root, "final")? "Found" : "Not Found");
-    printf("Search for 'Hayao Miyazaki': %s\n", search(root, "Hayao Miyazaki")? "Found" : "Not Found");
-    printf("Search for 'Studio Ghibli': %s\n", search(root, "Studio Ghibli")? "Found" : "Not Found");
+    printf("Search for 'life': %s\n", search(root, "life")? "Found" : "Not Found");
+    printf("Search for 'boy': %s\n", search(root, "boy")? "Found" : "Not Found");
     printf("Search for 'log': %s\n", search(root, "log")? "Found" : "Not Found"); // Should not be found
 
     // 清理內存
