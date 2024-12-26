@@ -74,7 +74,6 @@
 2. **Trie 樹操作**
    - `create_node()`：創建新節點
    - `insert()`：插入單字
-   - `search()`：搜索單字
    - `collect_words()`：收集單字統計信息
    - `free_trie()`：釋放記憶體
 
