@@ -208,10 +208,10 @@ int main()
     collect_words(root, empty_word, 0, words, &word_count, &max_depth);
 
     // 輸出結果
-    printf("Node[Word]\t\t\t\tFrequency\n");
+    printf("%-4s %-30s %s\n", "Node", "Word", "Frequency");
     for (int i = 0; i < word_count; i++)
     {
-        printf("%d[%s]\t\t\t\t\t\t%d\n",
+        printf("%-4d %-30s %d\n",
                i + 1, words[i].word, words[i].count);
     }
 
