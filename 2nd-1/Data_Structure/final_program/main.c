@@ -85,7 +85,7 @@ void insert_words(Node *root, char *text) {
     }
 }
 
-// 從文件加載文章內容
+// 從文件讀取文章內容
 char* load_article(char *path) {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
@@ -97,7 +97,7 @@ char* load_article(char *path) {
     long file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
     
-    // 分配內存並讀取文件內容
+    // 分配記憶體並讀取文件內容
     char *article = (char *)malloc(file_size + 1);
     fread(article, sizeof(char), file_size, file);
     article[file_size] = '\0';  // 添加字符串結束符
@@ -105,7 +105,7 @@ char* load_article(char *path) {
     return article;
 }
 
-// 遞歸釋放 Trie 樹的內存
+// 遞歸釋放 Trie 樹的記憶體
 void free_trie(Node *root) {
     if (root == NULL) return;
     
@@ -147,7 +147,7 @@ int main()
     printf("Search for 'boy': %s\n", search(root, "boy")? "Found" : "Not Found");
     printf("Search for 'log': %s\n", search(root, "log")? "Found" : "Not Found"); // Should not be found
 
-    // 清理內存
+    // 清理記憶體
     free(article);
     free(article_copy);
     free_trie(root);
