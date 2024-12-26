@@ -3,14 +3,21 @@
 #include <ctype.h>    // 用於字符處理函數
 #include <string.h>   // 用於字符串處理函數
 
-#define ALPHABET_SIZE 26  // 定義英文字母表大小
+#define ALPHABET_SIZE 37  // 10個數字 + 26個字母 + 撇號
+#define APOSTROPHE_INDEX 36  // 撇號的索引
 
 // Trie 樹節點結構
 typedef struct Node
 {
     struct Node *children[ALPHABET_SIZE];  // 子節點數組，每個字母對應一個子節點
-    int is_end_of_word;                   // 標記是否為單詞結尾
+    int count;                   // 標記是否為單詞結尾
 } Node;
+
+// 新增結構體來存儲單詞信息
+typedef struct {
+    char word[100];
+    int count;
+} WordInfo;
 
 // 創建新的 Trie 節點
 Node *create_node()
@@ -20,7 +27,7 @@ Node *create_node()
         printf("Memory allocation failed!\n");
         exit(1);
     }
-    node->is_end_of_word = 0;  // 初始化不是單詞結尾
+    node->count = 0;  // 初始化計數為 0
     // 初始化所有子節點為 NULL
     for (int i = 0; i < ALPHABET_SIZE; i++)
     {
@@ -35,53 +42,42 @@ void insert(Node *root, const char *word)
     Node *current = root;
     for (int i = 0; word[i] != '\0'; i++)
     {
-        // 跳過非字母字符
-        if (!isalpha(word[i])) continue;
+        int index;
+        char c = word[i];
         
-        // 將字母轉換為小寫並計算索引
-        int index = tolower(word[i]) - 'a';
-        // 檢查索引是否有效
+        if (isdigit(c)) {
+            // 處理數字：將索引設在最前面 (0-9)
+            index = c - '0';
+        }
+        else if (isalpha(c)) {
+            // 處理字母：從索引10開始 (10-35)
+            index = 10 + (tolower(c) - 'a');
+        }
+        else if (c == '\'') {
+            // 處理撇號：放在最後
+            index = APOSTROPHE_INDEX;
+        }
+        else {
+            continue;
+        }
+        
         if (index < 0 || index >= ALPHABET_SIZE) continue;
         
-        // 如果子節點不存在，創建新節點
         if (current->children[index] == NULL)
         {
             current->children[index] = create_node();
         }
         current = current->children[index];
     }
-    current->is_end_of_word = 1;  // 標記單詞結尾
-}
-
-// 在 Trie 中搜索單詞
-int search(Node *root, const char *word)
-{
-    Node *current = root;
-    for (int i = 0; word[i] != '\0'; i++)
-    {
-        // 跳過非字母字符
-        if (!isalpha(word[i])) continue;
-        
-        // 將字母轉換為小寫並計算索引
-        int index = tolower(word[i]) - 'a';
-        // 檢查索引是否有效
-        if (index < 0 || index >= ALPHABET_SIZE) continue;
-        
-        // 如果路徑不存在，返回未找到
-        if (current->children[index] == NULL)
-            return 0;
-        current = current->children[index];
-    }
-    return current->is_end_of_word;  // 返回是否為完整單詞
+    current->count++;
 }
 
 // 將文本分割成單詞並插入 Trie
 void insert_words(Node *root, char *text) {
-    // 使用 strtok 分割文本，分隔符包括空白字符和標點符號
-    char *word = strtok(text, " \t\n\r\f\v.,!?\"';:");
+    char *word = strtok(text, " \t\n\r\f\v.,!?\"`;:");
     while (word != NULL) {
         insert(root, word);
-        word = strtok(NULL, " \t\n\r\f\v.,!?\"';:");
+        word = strtok(NULL, " \t\n\r\f\v.,!?\"`;:");
     }
 }
 
@@ -118,6 +114,45 @@ void free_trie(Node *root) {
     free(root);  // 釋放當前節點
 }
 
+// 新增函數：收集單詞信息
+void collect_words(Node *node, char *current_word, int depth, 
+                  WordInfo *words, int *word_count, int *max_depth) {
+    if (node->count > 0) {
+        strcpy(words[*word_count].word, current_word);
+        words[*word_count].count = node->count;
+        (*word_count)++;
+        
+        if (depth > *max_depth) {
+            *max_depth = depth;
+        }
+    }
+    
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (node->children[i] != NULL) {
+            char next_word[100];
+            strcpy(next_word, current_word);
+            char c;
+            
+            if (i < 10) {
+                c = '0' + i;  // 數字 (0-9)
+            }
+            else if (i < 36) {
+                c = 'a' + (i - 10);  // 字母 (a-z)
+            }
+            else {
+                c = '\'';  // 撇號
+            }
+            
+            int len = strlen(next_word);
+            next_word[len] = c;
+            next_word[len + 1] = '\0';
+            
+            collect_words(node->children[i], next_word, depth + 1, 
+                         words, word_count, max_depth);
+        }
+    }
+}
+
 int main()
 {
     // 加載文章內容
@@ -140,13 +175,24 @@ int main()
     // 將文章中的單詞插入 Trie
     insert_words(root, article_copy);
     
-    // 測試搜索功能
-    printf("Search for 'is': %s\n", search(root, "is")? "Found" : "Not Found");
-    printf("Search for 'final': %s\n", search(root, "final")? "Found" : "Not Found");
-    printf("Search for 'life': %s\n", search(root, "life")? "Found" : "Not Found");
-    printf("Search for 'boy': %s\n", search(root, "boy")? "Found" : "Not Found");
-    printf("Search for 'log': %s\n", search(root, "log")? "Found" : "Not Found"); // Should not be found
-
+    // 收集所有單詞信息
+    WordInfo words[1000];
+    int word_count = 0;
+    int max_depth = 0;
+    char empty_word[1] = "";
+    collect_words(root, empty_word, 0, words, &word_count, &max_depth);
+    
+    // 輸出結果
+    printf("Node[Word]\t\t\t\tFrequency\n");
+    for (int i = 0; i < word_count; i++) {
+        printf("%d[%s]\t\t\t\t\t\t%d\n", 
+               i + 1, words[i].word, words[i].count);
+    }
+    
+    // 輸出統計信息
+    printf("\nTotal words: %d, Total nodes: %d, Tree height: %d\n", 
+           word_count, word_count, max_depth);
+    
     // 清理記憶體
     free(article);
     free(article_copy);
