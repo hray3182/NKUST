@@ -1,0 +1,4 @@
+Sum: 203
+Max: 78
+Min: -10
+Count: 6
