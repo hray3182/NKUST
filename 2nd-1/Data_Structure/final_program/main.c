@@ -3,14 +3,13 @@
 #include <ctype.h>  // 用於字符處理函數
 #include <string.h> // 用於字符串處理函數
 
-#define ALPHABET_SIZE 37    // 10個數字 + 26個字母 + 撇號
-#define APOSTROPHE_INDEX 36 // 撇號的索引
+#define ALPHABET_SIZE 128  // ASCII 範圍 0-127
 
 // Trie 樹節點結構
 typedef struct Node
 {
     struct Node *children[ALPHABET_SIZE]; // 子節點數組，每個字母對應一個子節點
-    int count;                            // 標記是否為單詞結尾
+    int count;                            // 標記是否為單詞結尾, 及單詞出現次數
 } Node;
 
 // 新增結構體來存儲單詞信息
@@ -44,32 +43,12 @@ void insert(Node *root, const char *word)
     Node *current = root;
     for (int i = 0; word[i] != '\0'; i++)
     {
-        int index;
-        char c = word[i];
-
-        if (isdigit(c))
-        {
-            // 處理數字：將索引設在最前面 (0-9)
-            index = c - '0';
-        }
-        else if (isalpha(c))
-        {
-            // 處理字母：從索引10開始 (10-35)
-            index = 10 + (tolower(c) - 'a');
-        }
-        else if (c == '\'')
-        {
-            // 處理撇號：放在最後
-            index = APOSTROPHE_INDEX;
-        }
-        else
-        {
+        int index = (unsigned char)word[i];  // 直接使用 ASCII 值作為索引
+        
+        // 跳過不可見字符
+        if (index < 32)  // ASCII 32 以下是控制字符
             continue;
-        }
-
-        if (index < 0 || index >= ALPHABET_SIZE)
-            continue;
-
+            
         if (current->children[index] == NULL)
         {
             current->children[index] = create_node();
@@ -82,11 +61,11 @@ void insert(Node *root, const char *word)
 // 將文本分割成單詞並插入 Trie
 void insert_words(Node *root, char *text)
 {
-    char *word = strtok(text, " \t\n\r\f\v.,!?\"`;:");
+    char *word = strtok(text, " \t\n\r\f\v.,!?\"':");
     while (word != NULL)
     {
         insert(root, word);
-        word = strtok(NULL, " \t\n\r\f\v.,!?\"`;:");
+        word = strtok(NULL, " \t\n\r\f\v.,!?\"':");
     }
 }
 
@@ -129,7 +108,7 @@ void free_trie(Node *root)
     free(root); // 釋放當前節點
 }
 
-// 新增函數：收集單詞信息
+// 收集單詞信息
 void collect_words(Node *node, char *current_word, int depth,
                    WordInfo *words, int *word_count, int *max_depth)
 {
@@ -151,23 +130,10 @@ void collect_words(Node *node, char *current_word, int depth,
         {
             char next_word[100];
             strcpy(next_word, current_word);
-            char c;
-
-            if (i < 10)
-            {
-                c = '0' + i; // 數字 (0-9)
-            }
-            else if (i < 36)
-            {
-                c = 'a' + (i - 10); // 字母 (a-z)
-            }
-            else
-            {
-                c = '\''; // 撇號
-            }
-
+            
+            // 直接使用 ASCII 值
             int len = strlen(next_word);
-            next_word[len] = c;
+            next_word[len] = (char)i;
             next_word[len + 1] = '\0';
 
             collect_words(node->children[i], next_word, depth + 1,
@@ -202,22 +168,29 @@ int main()
 
     // 收集所有單詞信息
     WordInfo words[1000];
-    int word_count = 0;
+    int unique_count = 0;    // 不同單詞的數量
+    int total_count = 0;   // 添加總字數統計
     int max_depth = 0;
     char empty_word[1] = "";
-    collect_words(root, empty_word, 0, words, &word_count, &max_depth);
+    collect_words(root, empty_word, 0, words, &unique_count, &max_depth);
+
+    // 計算總字數
+    for (int i = 0; i < unique_count; i++)
+    {
+        total_count += words[i].count;
+    }
 
     // 輸出結果
     printf("%-4s %-30s %s\n", "Node", "Word", "Frequency");
-    for (int i = 0; i < word_count; i++)
+    for (int i = 0; i < unique_count; i++)
     {
         printf("%-4d %-30s %d\n",
                i + 1, words[i].word, words[i].count);
     }
 
-    // 輸出統計信息
-    printf("\nTotal words: %d, Total nodes: %d, Tree height: %d\n",
-           word_count, word_count, max_depth);
+    // 修改統計信息輸出
+    printf("\nUnique words: %d, Total words: %d, Total nodes: %d, Tree height: %d\n",
+           unique_count, total_count, unique_count, max_depth);
 
     // 清理記憶體
     free(article);
