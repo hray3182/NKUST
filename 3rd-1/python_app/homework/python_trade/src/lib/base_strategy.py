@@ -8,7 +8,20 @@ from abc import ABC, abstractmethod
 class BaseStrategy(ABC):
     """交易策略基礎類別，包含共同的資料下載、交易邏輯和報告功能"""
 
-    def __init__(self):
+    def __init__(self, target_stock=None, start_date=None, end_date=None, stop_loss=0.1):
+        """
+        初始化交易策略
+
+        Args:
+            target_stock: 股票代號 (e.g., '2498.TW')
+            start_date: 資料開始日期
+            end_date: 資料結束日期
+            stop_loss: 停損點，預設為 0.1 (即 -10%)
+        """
+        self.target_stock = target_stock
+        self.start_date = start_date
+        self.end_date = end_date
+        self.stop_loss = stop_loss
         self.df = None
         self.trades = []
 
@@ -100,8 +113,22 @@ class BaseStrategy(ABC):
         else:
             print("No trades executed.")
 
-    def start_strategy(self, target_stock, start_date, end_date, stop_loss=0.1):
-        """執行交易策略"""
+    def start_strategy(self, target_stock=None, start_date=None, end_date=None, stop_loss=None):
+        """
+        執行交易策略
+
+        Args:
+            target_stock: 股票代號，若為 None 則使用初始化時的值
+            start_date: 資料開始日期，若為 None 則使用初始化時的值
+            end_date: 資料結束日期，若為 None 則使用初始化時的值
+            stop_loss: 停損點，若為 None 則使用初始化時的值
+        """
+        # 使用傳入的參數或類別屬性
+        target_stock = target_stock or self.target_stock
+        start_date = start_date or self.start_date
+        end_date = end_date or self.end_date
+        stop_loss = stop_loss if stop_loss is not None else self.stop_loss
+
         # 下載股票資料
         df = self.download_data(target_stock, start_date, end_date)
 
@@ -159,6 +186,13 @@ class BaseStrategy(ABC):
             color="black",
             linewidth=1.5,
         )
+
+        # 如果有設定 target_stock，在標題中顯示
+        title = "Stock Price Chart"
+        if self.target_stock:
+            title = f"{self.target_stock} - Stock Price Chart"
+        ax.set_title(title, fontsize=14, fontweight="bold")
+
         ax.set_ylabel("Price", fontsize=12)
         ax.legend(loc="best")
         ax.grid(True, alpha=0.3)

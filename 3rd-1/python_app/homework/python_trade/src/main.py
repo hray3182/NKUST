@@ -9,20 +9,27 @@ from lib.ma import MAStrategy
 from lib.kd import KDStrategy
 
 
-def main():
-    # 設定交易參數
+def __init__():
+    """初始化交易參數"""
     target_stock = "2498.TW"  # 分析公司代號 e.g., '2330.TW'是台積電
     start_date = datetime(2021, 1, 1)  # 設定資料開始日期
     end_date = datetime(2021, 7, 19)  # 設定資料結束日期
     stop_loss = 0.1  # 停損點，指-10%會強制賣出
 
-    # 建立所有策略實例
+    return target_stock, start_date, end_date, stop_loss
+
+
+def main():
+    # 載入交易參數
+    target_stock, start_date, end_date, stop_loss = __init__()
+
+    # 建立所有策略實例（將參數傳入父類別）
     strategies = {
-        "MACD": MACDStrategy(),
-        "RSI": RSIStrategy(),
-        "BBANDS": BBANDSStrategy(),
-        "MA": MAStrategy(),
-        "KD": KDStrategy(),
+        "MACD": MACDStrategy(target_stock, start_date, end_date, stop_loss),
+        "RSI": RSIStrategy(target_stock, start_date, end_date, stop_loss),
+        "BBANDS": BBANDSStrategy(target_stock, start_date, end_date, stop_loss),
+        "MA": MAStrategy(target_stock, start_date, end_date, stop_loss),
+        "KD": KDStrategy(target_stock, start_date, end_date, stop_loss),
     }
 
     # 執行所有策略並收集結果
@@ -39,8 +46,8 @@ def main():
         print(f"Running {strategy_name} Strategy")
         print("=" * 80)
 
-        # 執行策略
-        df = strategy.start_strategy(target_stock, start_date, end_date, stop_loss)
+        # 執行策略（參數已在初始化時設定，可以直接呼叫）
+        df = strategy.start_strategy()
         results[strategy_name] = {
             "df": df,
             "trades": strategy.trades,

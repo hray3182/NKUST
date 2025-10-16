@@ -45,7 +45,6 @@ class KDStrategy(BaseStrategy):
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
         # Top chart: Price trend
-        ax1.set_title("Stock Price Chart", fontsize=14, fontweight="bold")
         self.draw_price_chart(ax1)
 
         # Bottom chart: KD indicator
