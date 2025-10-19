@@ -1,2 +1,5 @@
 .task
 .ipynb_checkpoints
+
+*.mp4
+*.png
