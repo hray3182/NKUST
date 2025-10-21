@@ -235,6 +235,60 @@ def train_svm_with_grid_search(X_train, y_train, X_test, y_test, output_dir):
     logging.info(f"Model saved to {output_dir / 'best_svm_model.pkl'}")
     logging.info(f"Scaler saved to {output_dir / 'scaler.pkl'}")
 
+    # Save detailed report to text file
+    report_path = output_dir / 'training_report.txt'
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("="*60 + "\n")
+        f.write("SVM TRAINING ANALYSIS REPORT\n")
+        f.write("="*60 + "\n\n")
+
+        f.write("HYPERPARAMETER TUNING RESULTS\n")
+        f.write("-"*60 + "\n")
+        f.write(f"Best hyperparameters: {best_params}\n")
+        f.write(f"Best cross-validation accuracy: {best_cv_score:.4f}\n\n")
+
+        f.write("Top 10 Parameter Combinations:\n")
+        top_results = results_df[['params', 'mean_test_score', 'std_test_score', 'rank_test_score']].head(10)
+        for idx, row in top_results.iterrows():
+            f.write(f"  Rank {int(row['rank_test_score'])}: {row['params']}\n")
+            f.write(f"    Accuracy: {row['mean_test_score']:.4f} (+/- {row['std_test_score']:.4f})\n")
+        f.write("\n")
+
+        f.write("="*60 + "\n")
+        f.write("TEST SET EVALUATION METRICS\n")
+        f.write("="*60 + "\n\n")
+
+        f.write("1. Confusion Matrix:\n")
+        f.write(f"   Predicted No  Predicted Yes\n")
+        f.write(f"Actual No    {cm[0,0]:5d}      {cm[0,1]:5d}\n")
+        f.write(f"Actual Yes   {cm[1,0]:5d}      {cm[1,1]:5d}\n\n")
+
+        f.write(f"2. Accuracy:  {accuracy:.4f}\n")
+        f.write(f"3. Precision: {precision:.4f}\n")
+        f.write(f"4. Recall:    {recall:.4f}\n")
+        f.write(f"5. F1 Score:  {f1:.4f}\n")
+        f.write(f"6. ROC Curve: Saved to 'roc_curve.png'\n")
+        f.write(f"7. AUC:       {auc:.4f}\n\n")
+
+        f.write("="*60 + "\n")
+        f.write("DETAILED CLASSIFICATION REPORT\n")
+        f.write("="*60 + "\n")
+        f.write(classification_report(y_test, y_pred, target_names=['No', 'Yes']))
+        f.write("\n")
+
+        f.write("="*60 + "\n")
+        f.write("SUMMARY\n")
+        f.write("="*60 + "\n")
+        f.write(f"Training samples: {len(X_train)}\n")
+        f.write(f"Testing samples:  {len(X_test)}\n")
+        f.write(f"Total features:   {X_train.shape[1]}\n")
+        f.write(f"Kernel type:      RBF\n")
+        f.write(f"Best C parameter: {best_params['C']}\n")
+        f.write(f"Best gamma:       {best_params['gamma']}\n")
+        f.write("="*60 + "\n")
+
+    logging.info(f"Training report saved to {report_path}")
+
     logging.info(f"\n{'='*60}")
 
     return best_model, scaler

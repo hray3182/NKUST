@@ -110,14 +110,22 @@ def extract_features(video_path, label, frame_interval, model_path, output_csv):
             # Extract rotation angles from rotation matrix (top-left 3x3)
             R = matrix[:3, :3]
 
-            # Calculate Euler angles (pitch, yaw, roll) in radians
-            pitch = np.arctan2(-R[2, 0], np.sqrt(R[2, 1]**2 + R[2, 2]**2))
-            yaw = np.arctan2(R[1, 0], R[0, 0])
-            roll = np.arctan2(R[2, 1], R[2, 2])
+            # Calculate Euler angles in radians
+            # Based on observation:
+            # - Nodding up/down should be PITCH
+            # - Turning left/right should be YAW
+            # - Tilting side to side should be ROLL
+            angle_x = np.arctan2(-R[2, 0], np.sqrt(R[2, 1]**2 + R[2, 2]**2))
+            angle_y = np.arctan2(R[1, 0], R[0, 0])
+            angle_z = np.arctan2(R[2, 1], R[2, 2])
 
-            row_data['head_pitch'] = pitch
-            row_data['head_yaw'] = yaw
-            row_data['head_roll'] = roll
+            # Map to correct semantic names based on observed behavior:
+            # angle_z was moving when nodding → this is pitch
+            # angle_x was moving when turning left/right → this is yaw
+            # angle_y was moving when tilting → this is roll
+            row_data['head_pitch'] = angle_z  # Nodding up/down
+            row_data['head_yaw'] = angle_x    # Turning left/right
+            row_data['head_roll'] = angle_y   # Tilting side to side
 
         data_rows.append(row_data)
         processed_count += 1

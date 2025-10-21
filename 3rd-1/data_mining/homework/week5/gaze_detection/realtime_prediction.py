@@ -66,6 +66,8 @@ class GazePredictor:
             features: Feature vector (11 features) or None if no face detected
             eyes_closed: Boolean indicating if eyes are closed
             blendshapes_dict: Dictionary of all blendshapes for debugging
+            transformation_matrix: 4x4 transformation matrix or None
+            rotation_angles: Dict with yaw, pitch, roll in degrees or None
         """
         # Convert to MediaPipe Image
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
@@ -74,7 +76,7 @@ class GazePredictor:
         detection_result = self.detector.detect(mp_image)
 
         if not detection_result.face_blendshapes:
-            return None, True, {}
+            return None, True, {}, None, None
 
         # Extract blendshapes
         blendshapes = detection_result.face_blendshapes[0]
@@ -90,23 +92,44 @@ class GazePredictor:
         eye_features = [blendshapes_dict.get(feat, 0.0) for feat in self.eye_gaze_features]
 
         # Extract head rotation from transformation matrix
+        transformation_matrix = None
+        rotation_angles = None
+
         if detection_result.facial_transformation_matrixes:
             matrix = np.array(detection_result.facial_transformation_matrixes[0]).reshape(4, 4)
+            transformation_matrix = matrix
             R = matrix[:3, :3]
 
-            # Calculate Euler angles (pitch, yaw, roll)
-            pitch = np.arctan2(-R[2, 0], np.sqrt(R[2, 1]**2 + R[2, 2]**2))
-            yaw = np.arctan2(R[1, 0], R[0, 0])
-            roll = np.arctan2(R[2, 1], R[2, 2])
+            # Calculate Euler angles from rotation matrix
+            # Based on observation:
+            # - Nodding up/down should be PITCH
+            # - Turning left/right should be YAW
+            # - Tilting side to side should be ROLL
 
-            head_features = [pitch, yaw, roll]
+            angle_x = np.arctan2(-R[2, 0], np.sqrt(R[2, 1]**2 + R[2, 2]**2))
+            angle_y = np.arctan2(R[1, 0], R[0, 0])
+            angle_z = np.arctan2(R[2, 1], R[2, 2])
+
+            # Map to correct semantic names based on observed behavior:
+            # angle_z was moving when nodding → this is pitch
+            # angle_x was moving when turning left/right → this is yaw
+            # angle_y was moving when tilting → this is roll
+            rotation_angles = {
+                'pitch': np.degrees(angle_z),  # Nodding up/down
+                'yaw': np.degrees(angle_x),    # Turning left/right
+                'roll': np.degrees(angle_y)    # Tilting side to side
+            }
+
+            # Keep original radians for model features (maintain compatibility with training)
+            # Order must match extract_features.py: [head_pitch, head_yaw, head_roll] = [angle_z, angle_x, angle_y]
+            head_features = [angle_z, angle_x, angle_y]
         else:
             head_features = [0.0, 0.0, 0.0]
 
         # Combine features
         features = np.array(eye_features + head_features).reshape(1, -1)
 
-        return features, eyes_closed, blendshapes_dict
+        return features, eyes_closed, blendshapes_dict, transformation_matrix, rotation_angles
 
     def predict(self, features):
         """
@@ -147,7 +170,8 @@ class GazePredictor:
         avg = np.mean(self.prediction_history)
         return 1 if avg >= 0.5 else 0
 
-    def draw_ui(self, frame, prediction, probability, eyes_closed, smoothed_prediction):
+    def draw_ui(self, frame, prediction, probability, eyes_closed, smoothed_prediction,
+                transformation_matrix=None, rotation_angles=None):
         """
         Draw UI elements on frame.
 
@@ -157,6 +181,8 @@ class GazePredictor:
             probability: Prediction probabilities [no, yes]
             eyes_closed: Boolean
             smoothed_prediction: Smoothed prediction
+            transformation_matrix: 4x4 transformation matrix or None
+            rotation_angles: Dict with yaw, pitch, roll in degrees or None
 
         Returns:
             frame: Frame with UI drawn
@@ -226,6 +252,18 @@ class GazePredictor:
         cv2.putText(frame, indicator_text, (20, 140),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
+        # Draw rotation angles (yaw, pitch, roll)
+        if rotation_angles is not None:
+            y_start = 170
+            cv2.putText(frame, "Head Rotation (degrees):", (20, y_start),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 3)  # Blue header, larger, thicker
+            cv2.putText(frame, f"Yaw:   {rotation_angles['yaw']:7.2f}", (20, y_start + 35),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  # Red text, larger, thicker
+            cv2.putText(frame, f"Pitch: {rotation_angles['pitch']:7.2f}", (20, y_start + 70),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  # Red text, larger, thicker
+            cv2.putText(frame, f"Roll:  {rotation_angles['roll']:7.2f}", (20, y_start + 105),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  # Red text, larger, thicker
+
         return frame
 
     def run(self):
@@ -260,7 +298,7 @@ class GazePredictor:
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                 # Extract features
-                features, eyes_closed, blendshapes = self.extract_features(rgb_frame)
+                features, eyes_closed, blendshapes, transformation_matrix, rotation_angles = self.extract_features(rgb_frame)
 
                 if features is not None and not eyes_closed:
                     # Predict
@@ -272,7 +310,8 @@ class GazePredictor:
                     smoothed_prediction = 0
 
                 # Draw UI
-                frame = self.draw_ui(frame, prediction, probability, eyes_closed, smoothed_prediction)
+                frame = self.draw_ui(frame, prediction, probability, eyes_closed, smoothed_prediction,
+                                   transformation_matrix, rotation_angles)
 
                 # Display frame
                 cv2.imshow('Gaze Detection - Press q to quit', frame)
