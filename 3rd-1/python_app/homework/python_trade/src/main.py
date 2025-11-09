@@ -2,11 +2,13 @@
 主程式：執行所有技術指標交易策略
 """
 from datetime import datetime
-from lib.macd import MACDStrategy
-from lib.rsi import RSIStrategy
-from lib.bbands import BBANDSStrategy
-from lib.ma import MAStrategy
-from lib.kd import KDStrategy
+from lib.strategies import (
+    MACDStrategy,
+    RSIStrategy,
+    BBANDSStrategy,
+    MAStrategy,
+    KDStrategy,
+)
 
 
 def __init__():
@@ -81,14 +83,10 @@ def main():
 
     print("=" * 80)
 
-    # 詢問是否要繪製指標圖
-    print("\nDo you want to draw indicator charts? (y/n)")
-    choice = input().strip().lower()
 
-    if choice == "y":
-        for strategy_name, strategy in strategies.items():
-            print(f"\nDrawing {strategy_name} indicator chart...")
-            strategy.draw_indicator()
+    for strategy_name, strategy in strategies.items():
+        print(f"\nDrawing {strategy_name} indicator chart...")
+        strategy.draw_indicator()
 
 
 if __name__ == "__main__":
