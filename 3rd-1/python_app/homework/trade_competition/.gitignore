@@ -2,7 +2,7 @@
 data_cache/
 
 # 結果目錄（可選，如果需要保留結果可以移除這行）
-# result/
+result/
 
 # Python 緩存
 __pycache__/
