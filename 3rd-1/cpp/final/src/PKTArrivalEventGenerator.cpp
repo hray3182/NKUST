@@ -20,7 +20,7 @@ DX_INFO* PKTArrivalEventGenerator::createNewArrival()
 
     // 填入工作資訊
     newJob->id = PKTCNT++;
-    newJob->arrivalTime = interArrivalTime;
+    newJob->arrivalTime = masterTime;
 
     // 產生 [1, max] 之間的均勻分布整數
     newJob->NoOfResourcesNeeded = arrivalTime_expRandGenerator.uniform_rand_range(1, max_NoOfResourcesNeeded);
