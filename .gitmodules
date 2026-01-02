@@ -1,0 +1,3 @@
+[submodule "3rd-1/DB_Application/ordering_app"]
+	path = 3rd-1/DB_Application/ordering_app
+	url = git@github.com:hray3182/ordering_app.git
