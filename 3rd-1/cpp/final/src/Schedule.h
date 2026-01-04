@@ -8,6 +8,7 @@ public:
   int cols;    // 時段數量
   int horizon; // 排班邊界（最後佔用的時段+1）
   int jobCount; // 已排班工作數
+  int lastJobStartCol; // 上一個 job 的開始 col
 
   Schedule(int rows_in, int cols_in);
 

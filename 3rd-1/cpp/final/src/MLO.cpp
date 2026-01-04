@@ -11,7 +11,8 @@ MLO::MLO(int rows, int cols) {
 
 void MLO::scheduleFCFS(DX_INFO *job) {
   int earliest = (int)ceil(job->arrivalTime);
-  int startCol = (fcfs->horizon > earliest) ? fcfs->horizon : earliest;  // 有 horizon 限制，不回填
+  // 從上一個 job 的開始位置搜索，看是否有剩餘 row 可並行
+  int startCol = max(fcfs->lastJobStartCol, earliest);
   int numRows = job->NoOfResourcesNeeded;
   int numCols = job->NoOfTimeSlotsNeeded;
 
@@ -23,6 +24,7 @@ void MLO::scheduleFCFS(DX_INFO *job) {
             fcfs->set(r, c, job->id + 1);
           }
         }
+        fcfs->lastJobStartCol = col;  // 更新上一個 job 的開始位置
         int endCol = col + numCols;
         if (endCol > fcfs->horizon) {
           fcfs->horizon = endCol;

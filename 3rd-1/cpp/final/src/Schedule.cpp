@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Schedule::Schedule(int rows_in, int cols_in) : rows(rows_in), cols(cols_in), horizon(0), jobCount(0) {
+Schedule::Schedule(int rows_in, int cols_in) : rows(rows_in), cols(cols_in), horizon(0), jobCount(0), lastJobStartCol(1) {
   table = new int *[rows];
   for (int i = 0; i < rows; i++) {
     table[i] = new int[cols];

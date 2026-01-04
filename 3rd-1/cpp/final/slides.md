@@ -50,10 +50,11 @@ table[0][2] = 1;  // 資源 0, 時段 2 分配給工作 1
 
 ## Class Schedule
 ```cpp
-int** table;    // 2D 陣列
-int rows, cols; // 大小
-int horizon;    // 排班邊界
-int jobCount;   // 已排班數
+int** table;         // 2D 陣列
+int rows, cols;      // 大小
+int horizon;         // 排班邊界
+int jobCount;        // 已排班數
+int lastJobStartCol; // 上一個工作開始的 col
 
 get(), set(), test(), print()
 ```
@@ -71,12 +72,12 @@ scheduleFCFS(), scheduleBF()
 # FCFS vs Backfilling
 
 ## FCFS (First Come First Served)
-- 新工作從 **horizon** 開始排
-- 不回填空隙
+- 新工作從 **上一個工作的開始位置** 開始排
+- 可利用同一時段剩餘的 row，但不回填更早的空隙
 
 ## Backfilling
 - 從 **到達時間** 開始找空位
-- 可以回填空隙
+- 可以回填所有空隙
 
 ![FCFS vs BF](圖示)
 
@@ -85,30 +86,31 @@ scheduleFCFS(), scheduleBF()
 # 排班表展示 - FCFS
 
 ```
-R\T  0  1  2  3  4  5  6  7  8  9 10 11 12 13
- 0   1  1  1  2  3  3  3  4  5  5  5  6  6  6
- 1   1  1  1  .  3  3  3  4  .  .  .  .  .  .
- 2   1  1  1  .  3  3  3  .  .  .  .  .  .  .
- 3   .  .  .  .  .  .  .  .  .  .  .  .  .  .
+R\T  0  1  2  3  4  5  6  7  8  9
+ 0   2  .  .  .  .  .  6  6  6  .
+ 1   1  1  1  3  3  3  5  5  5  .
+ 2   1  1  1  3  3  3  4  .  .  .
+ 3   1  1  1  3  3  3  4  .  .  .
 ```
 
-- **horizon**: 14
-- row 3 完全空著，col 3 也有空隙
+- **horizon**: 10
+- Job2 利用 Job1 剩餘的 row 0
+- Job5, Job6 利用 Job4 剩餘的 row
 
 ---
 
 # 排班表展示 - Backfilling
 
 ```
-R\T  0  1  2  3  4  5  6  7  8  9 10 11 12 13
- 0   1  1  1  3  3  3  4  .  .  .  .  .  .  .
- 1   1  1  1  3  3  3  4  .  .  .  .  .  .  .
- 2   1  1  1  3  3  3  .  .  .  .  .  .  .  .
- 3   2  5  5  5  6  6  6  .  .  .  .  .  .  .
+R\T  0  1  2  3  4  5  6  7
+ 0   2  5  5  5  6  6  6  .
+ 1   1  1  1  3  3  3  .  .
+ 2   1  1  1  3  3  3  4  .
+ 3   1  1  1  3  3  3  4  .
 ```
 
-- **horizon**: 7
-- Job2, Job5, Job6 回填到 row 3
+- **horizon**: 8
+- Job2, Job5, Job6 回填到 row 0
 
 ---
 
@@ -117,12 +119,12 @@ R\T  0  1  2  3  4  5  6  7  8  9 10 11 12 13
 |          | FCFS  | Backfilling |
 |----------|-------|-------------|
 | 已排班數 | 6     | 6           |
-| 最後時段 | 14    | 7           |
-| **Throughput** | **0.43** | **0.86** |
+| 最後時段 | 10    | 8           |
+| **Throughput** | **0.60** | **0.75** |
 
-$$Throughput = \frac{已排班工作數}{最後時段編號 + 1}$$
+$$Throughput = \frac{已排班工作數}{horizon}$$
 
-**結論：Backfilling 效率比 FCFS 高約 100%**
+**結論：Backfilling 效率比 FCFS 高約 25%**
 
 ---
 
