@@ -1,3 +1,7 @@
 [submodule "3rd-1/DB_Application/ordering_app"]
 	path = 3rd-1/DB_Application/ordering_app
 	url = git@github.com:hray3182/ordering_app.git
+
+[submodule "1st-2/python/oop_practice"]
+	path = 1st-2/python/oop_practice
+	url = https://github.com/hray3182/OOP_Practice.git

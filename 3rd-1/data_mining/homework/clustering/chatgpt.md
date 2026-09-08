@@ -153,8 +153,3 @@ Through interactions with AI, I successfully built a complete K-means image comp
   - Visualizing the compression results
   ``
 ```
-```
-```
-```
-```
-```

@@ -1,0 +1,69 @@
+============================================================
+SVM TRAINING ANALYSIS REPORT
+============================================================
+
+HYPERPARAMETER TUNING RESULTS
+------------------------------------------------------------
+Best hyperparameters: {'C': 100, 'gamma': 1}
+Best cross-validation accuracy: 0.9842
+
+Top 10 Parameter Combinations:
+  Rank 1: {'C': 1000, 'gamma': 1}
+    Accuracy: 0.9842 (+/- 0.0028)
+  Rank 1: {'C': 100, 'gamma': 1}
+    Accuracy: 0.9842 (+/- 0.0028)
+  Rank 3: {'C': 100, 'gamma': 'auto'}
+    Accuracy: 0.9839 (+/- 0.0015)
+  Rank 3: {'C': 100, 'gamma': 'scale'}
+    Accuracy: 0.9839 (+/- 0.0015)
+  Rank 3: {'C': 100, 'gamma': 0.1}
+    Accuracy: 0.9839 (+/- 0.0012)
+  Rank 6: {'C': 10, 'gamma': 1}
+    Accuracy: 0.9836 (+/- 0.0024)
+  Rank 7: {'C': 1, 'gamma': 1}
+    Accuracy: 0.9830 (+/- 0.0024)
+  Rank 8: {'C': 1000, 'gamma': 0.1}
+    Accuracy: 0.9809 (+/- 0.0015)
+  Rank 9: {'C': 1000, 'gamma': 'scale'}
+    Accuracy: 0.9803 (+/- 0.0010)
+  Rank 10: {'C': 1000, 'gamma': 'auto'}
+    Accuracy: 0.9800 (+/- 0.0015)
+
+============================================================
+TEST SET EVALUATION METRICS
+============================================================
+
+1. Confusion Matrix:
+   Predicted No  Predicted Yes
+Actual No      320         10
+Actual Yes       9        486
+
+2. Accuracy:  0.9770
+3. Precision: 0.9798
+4. Recall:    0.9818
+5. F1 Score:  0.9808
+6. ROC Curve: Saved to 'roc_curve.png'
+7. AUC:       0.9964
+
+============================================================
+DETAILED CLASSIFICATION REPORT
+============================================================
+              precision    recall  f1-score   support
+
+          No       0.97      0.97      0.97       330
+         Yes       0.98      0.98      0.98       495
+
+    accuracy                           0.98       825
+   macro avg       0.98      0.98      0.98       825
+weighted avg       0.98      0.98      0.98       825
+
+============================================================
+SUMMARY
+============================================================
+Training samples: 3300
+Testing samples:  825
+Total features:   11
+Kernel type:      RBF
+Best C parameter: 100
+Best gamma:       1
+============================================================

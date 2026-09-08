@@ -1,5 +1,27 @@
-.venv
+# Local environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.vscode/
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+
+# Downloaded models and datasets
 CNNMnist.keras
 mnist.keras
-__pycache__
-.vscode
+/3rd-1/data_mining/homework/week5/gaze_detection/face_landmarker.task
+/3rd-2/deep_learning/week7/cats_and_dogs_small/
+
+# Local submission archives and generated artifacts
+/3rd-1/data_mining/homework/week5/gaze_detection/*.zip
+/3rd-2/deep_learning/week7/*.zip
+/3rd-1/data_mining/homework/week5/gaze_detection/output_features/
+/3rd-1/data_mining/homework/week5/gaze_detection/svm_results/*.pkl
+/3rd-1/DB_Application/final/b_tree/bplus_tree
+/3rd-1/python_app/in_class/students
